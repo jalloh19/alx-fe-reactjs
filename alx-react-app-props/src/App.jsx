@@ -1,3 +1,4 @@
+// App.jsx
 import ProfilePage from './ProfilePage';
 import UserContext from './UserContext';
 
@@ -12,7 +13,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
