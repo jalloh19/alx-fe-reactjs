@@ -1,8 +1,13 @@
+// src/UserProfile.jsx
 import React, { useContext } from 'react';
 import UserContext from './UserContext';
 
-function UserDetails() {
+function UserProfile() {
   const userData = useContext(UserContext);
+
+  if (!userData) {
+    return <div>Loading user data...</div>;
+  }
 
   return (
     <div>
@@ -12,4 +17,4 @@ function UserDetails() {
   );
 }
 
-export default UserDetails;
+export default UserProfile;
