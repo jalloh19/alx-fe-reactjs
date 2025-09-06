@@ -1,7 +1,11 @@
-import UserInfo from '../UserInfo';
-
-function ProfilePage({ userData }) {
-  return <UserInfo userData={userData} />;
+function UserProfile(props) {
+  return (
+    <div>
+      <h2>{props.name}</h2>
+      <p>Age: {props.age}</p>
+      <p>Bio: {props.bio}</p>
+    </div>
+  );
 }
 
-export default ProfilePage;
+export default UserProfile;
