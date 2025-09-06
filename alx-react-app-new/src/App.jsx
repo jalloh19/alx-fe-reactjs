@@ -1,22 +1,23 @@
-import Header from "./components/Header";
-import MainContent from "./components/MainContent";
-import UserProfile from "./components/UserProfile";
-import Footer from "./components/Footer";
+import Header from './components/Header';
+import MainContent from './components/MainContent';
+import Footer from './components/Footer';
+import UserProfile from './components/UserProfile';
+import Counter from './components/Counter';
 
 function App() {
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div>
       <Header />
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <MainContent />
-        <UserProfile name="Alice" age="25" bio="Loves hiking and photography" />
-      </div>
+      <MainContent />
+      <UserProfile name="Alice" age="25" bio="Loves hiking and photography" />
+      <Counter />
       <Footer />
     </div>
   );
 }
 
 export default App;
+
 
 
 
