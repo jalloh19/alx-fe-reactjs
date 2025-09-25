@@ -1,133 +1,73 @@
-import { useState } from 'react';
-import { fetchUserData } from '../services/githubService';
+import React, { useState } from 'react';
+import { searchUsers } from '../services/githubService';
 
-const Search = () => {
-  const [username, setUsername] = useState('');
-  const [user, setUser] = useState(null);
+function Search() {
+  const [query, setQuery] = useState('');
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [searched, setSearched] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!username.trim()) return;
-
-    setLoading(true);
-    setError(null);
-    setUser(null);
-    setSearched(true);
-
+  const fetchUserData = async (searchQuery) => {
     try {
-      const userData = await fetchUserData(username.trim());
-      setUser(userData);
+      setLoading(true);
+      setError(null);
+      const data = await searchUsers(searchQuery);
+      // Fetch additional user details including location
+      const usersWithLocation = await Promise.all(
+        data.map(async (user) => {
+          const response = await fetch(user.url);
+          const details = await response.json();
+          return { ...user, location: details.location };
+        })
+      );
+      setUsers(usersWithLocation);
     } catch (err) {
-      setError(err.message);
+      setError('Error fetching users');
+      console.error('Error:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleReset = () => {
-    setUsername('');
-    setUser(null);
-    setError(null);
-    setSearched(false);
-    setLoading(false);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (query.trim()) {
+      fetchUserData(query);
+    }
   };
 
   return (
-    <div className="search-component">
-      <form onSubmit={handleSubmit} className="search-form">
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Enter GitHub username..."
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="search-input"
-            disabled={loading}
-          />
-          <button 
-            type="submit" 
-            className="search-button"
-            disabled={loading || !username.trim()}
-          >
-            {loading ? 'Searching...' : 'Search'}
-          </button>
-        </div>
+    <div className="container mx-auto p-4">
+      <form onSubmit={handleSubmit} className="mb-4">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search GitHub users..."
+          className="p-2 border rounded"
+        />
+        <button type="submit" className="ml-2 p-2 bg-blue-500 text-white rounded">
+          Search
+        </button>
       </form>
-
-      {/* Display Results */}
-      <div className="search-results">
-        {/* Loading State */}
-        {loading && (
-          <div className="state-message loading">
-            <div className="spinner"></div>
-            <p>Loading...</p>
+      
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {users.map((user) => (
+          <div key={user.id} className="border p-4 rounded">
+            <img src={user.avatar_url} alt={user.login} className="w-20 h-20 rounded-full" />
+            <h3 className="mt-2">{user.login}</h3>
+            <p className="text-gray-600">Location: {user.location || 'Not available'}</p>
+            <a href={user.html_url} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+              View Profile
+            </a>
           </div>
-        )}
-
-        {/* Error State - Specifically for "User not found" */}
-        {error && !loading && error === 'User not found' && (
-          <div className="state-message error">
-            <p>Looks like we cant find the user</p>
-            <button onClick={handleReset} className="retry-button">
-              Try Again
-            </button>
-          </div>
-        )}
-
-        {/* Other Errors */}
-        {error && !loading && error !== 'User not found' && (
-          <div className="state-message error">
-            <p>{error}</p>
-            <button onClick={handleReset} className="retry-button">
-              Try Again
-            </button>
-          </div>
-        )}
-
-        {/* Success State - User Found */}
-        {user && !loading && !error && (
-          <div className="user-result">
-            <div className="user-card">
-              <div className="user-avatar">
-                <img src={user.avatar_url} alt={`${user.login}'s avatar`} />
-              </div>
-              <div className="user-info">
-                <h2>{user.name || user.login}</h2>
-                <p className="username">@{user.login}</p>
-                {user.bio && <p className="user-bio">{user.bio}</p>}
-                <div className="user-stats">
-                  <span>Followers: {user.followers}</span>
-                  <span>Following: {user.following}</span>
-                  <span>Repos: {user.public_repos}</span>
-                </div>
-                <a 
-                  href={user.html_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="profile-link"
-                >
-                  View GitHub Profile
-                </a>
-              </div>
-            </div>
-            <button onClick={handleReset} className="reset-button">
-              Search Another User
-            </button>
-          </div>
-        )}
-
-        {/* No results after search */}
-        {searched && !user && !loading && !error && (
-          <div className="state-message initial">
-            <p>Enter a username to search for GitHub users</p>
-          </div>
-        )}
+        ))}
       </div>
     </div>
   );
-};
+}
 
 export default Search;
