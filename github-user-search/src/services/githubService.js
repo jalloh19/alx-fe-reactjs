@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const GITHUB_API_URL = 'https://api.github.com/search/users?q=';
+const GITHUB_API_URL = 'https://api.github.com/search/users';
 
 /**
  * Advanced search for GitHub users with multiple criteria
@@ -45,14 +45,22 @@ export const searchUsers = async (criteria = {}, page = 1) => {
 
     console.log('Searching users with params:', params);
     
-    const response = await axios.get(`${GITHUB_API_URL}${query}`, { params });
+    const response = await axios.get(`${GITHUB_API_URL}?q=${encodeURIComponent(query)}`, {
+      headers: {
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
     
     // If we have results, fetch detailed information for each user
     if (response.data.items && response.data.items.length > 0) {
       const usersWithDetails = await Promise.all(
         response.data.items.map(async (user) => {
           try {
-            const userDetail = await axios.get(`/users/${user.login}`);
+            const userDetail = await axios.get(user.url, {
+              headers: {
+                'Accept': 'application/vnd.github.v3+json'
+              }
+            });
             return userDetail.data;
           } catch (error) {
             console.warn(`Could not fetch details for user ${user.login}:`, error.message);

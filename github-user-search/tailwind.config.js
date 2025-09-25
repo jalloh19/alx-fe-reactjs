@@ -2,16 +2,22 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,jsx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
       colors: {
-        'github-dark': '#0d1117',
-        'github-gray': '#161b22',
-        'github-border': '#30363d',
-        'github-text': '#f0f6fc',
-        'github-muted': '#8b949e',
+        github: {
+          black: '#24292f',
+          white: '#ffffff',
+          border: '#d0d7de',
+          green: '#2da44e',
+          'green-hover': '#2c974b',
+          blue: '#0969da',
+          gray: '#57606a',
+          red: '#cf222e',
+          'input-bg': '#f6f8fa',
+        },
       },
     },
   },

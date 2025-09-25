@@ -2,11 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --github-black: #24292f;
+  --github-white: #ffffff;
+  --github-border: #d0d7de;
+  --github-green: #2da44e;
+  --github-green-hover: #2c974b;
+  --github-input-bg: #f6f8fa;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #0d1117;
-  color: #f0f6fc;
+  background-color: var(--github-white);
+  color: var(--github-black);
 }
